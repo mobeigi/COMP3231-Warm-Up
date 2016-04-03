@@ -136,6 +136,9 @@ boot(void)
 
 	kheap_nextgeneration();
 
+  //Print hello world!
+  complex_hello();
+  
 	/*
 	 * Make sure various things aren't screwed up.
 	 */
