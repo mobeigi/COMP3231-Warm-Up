@@ -1,0 +1,81 @@
+diff --git kern/conf/conf.kern kern/conf/conf.kern
+index 48ed457..846c94f 100644
+--- kern/conf/conf.kern
++++ kern/conf/conf.kern
+@@ -383,6 +383,7 @@ file      syscall/time_syscalls.c
+ 
+ file      main/main.c
+ file      main/menu.c
++file      main/hello.c
+ 
+ ########################################
+ #                                      #
+diff --git kern/main/hello.c kern/main/hello.c
+new file mode 100644
+index 0000000..954b5af
+--- /dev/null
++++ kern/main/hello.c
+@@ -0,0 +1,48 @@
++#include <types.h>
++#include <kern/errno.h>
++#include <kern/unistd.h>
++#include <lib.h>
++#include <test.h>
++
++extern void complex_hello(void);
++
++static char *my_kstrdup(const char *buf)
++{
++	char *ptr, *ret;
++
++	ret = ptr = kmalloc(strlen(buf) + 1);
++	if ((ptr == NULL))
++		panic("kmalloc returned NULL");
++
++	for (; *buf != '\0'; ++ptr, ++buf)
++		*ptr = *buf;
++
++	*ptr = '\0';
++
++	return ret;
++}
++
++static int my_toupper(int c) 
++{
++	if (c >= 'a' && c <= 'z') 
++		return c - 'a' + 'A';
++
++	return c;
++}
++
++void complex_hello(void)
++{
++	const char *msg = "hello World!!!";
++	char *copy;
++
++	/* my_kstrdup never returns a NULL pointer, no need to check */
++	copy = my_kstrdup(msg);
++
++	/* We want 'Hello World!!!', need to capitalise the first letter */
++	copy[0] = my_toupper(copy[0]);
++
++	kprintf("%s\n", copy);
++
++	/* Free the allocated memory */
++	kfree(copy);
++}
+diff --git kern/main/main.c kern/main/main.c
+index c1c14cc..3dae4d0 100644
+--- kern/main/main.c
++++ kern/main/main.c
+@@ -136,6 +136,9 @@ boot(void)
+ 
+ 	kheap_nextgeneration();
+ 
++  //Print hello world!
++  complex_hello();
++  
+ 	/*
+ 	 * Make sure various things aren't screwed up.
+ 	 */
+
